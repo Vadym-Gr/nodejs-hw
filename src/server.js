@@ -1,6 +1,3 @@
-import path from "node:path";
-import fs from "node:fs/promises";
-
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
@@ -26,6 +23,12 @@ app.use(
     },
   }),
 );
+
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Server is running',
+  });
+});
 
 // Отримати всі нотатки
 app.get('/notes', (req, res) => {
