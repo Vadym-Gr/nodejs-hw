@@ -1,8 +1,13 @@
 import express from 'express';
 import cors from 'cors';
-import pino from 'pino-http';
+
 import 'dotenv/config';
-import {connectMongoDB} from './db/connectMongoDB.js';
+import { connectMongoDB } from './db/connectMongoDB.js';
+
+import { notFoundHandler } from './middleware/notFoundHandler.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { Logger } from './middleware/logger.js';
+import notesRouter from './routes/notesRoutes.js';
 
 await connectMongoDB();
 
@@ -11,63 +16,15 @@ const PORT = process.env.PORT ?? 3000;
 
 app.use(express.json());
 app.use(cors());
-app.use(
-  pino({
-    level: 'info',
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-        translateTime: 'HH:MM:ss',
-        ignore: 'pid,hostname',
-        messageFormat: '{req.method} {req.url} {res.statusCode} - {responseTime}ms',
-        hideObject: true,
-      },
-    },
-  }),
-);
+app.use(Logger);
 
-app.get('/', (req, res) => {
-  res.status(200).json({
-    message: 'Server is running',
-  });
-});
-
-// Отримати всі нотатки
-app.get('/notes', (req, res) => {
-  res.status(200).json({ message: 'Retrieved all notes' });
-});
-
-// Отримати нотатку за ID
-app.get('/notes/:noteId', (req, res) => {
-  const { noteId } = req.params;
-
-  res.status(200).json({
-    message: `Retrieved note with ID: ${noteId}`,
-  });
-});
-
-// Тестовий маршрут для імітації помилки
-app.get('/test-error', (req, res) => {
-  throw new Error('Simulated server error');
-});
+app.use(notesRouter);
 
 // Middleware 404 (після всіх маршрутів)
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
+app.use(notFoundHandler);
 
-app.use((err, req, res, next) => {
-  console.error(err);
-
-  const isProd = process.env.NODE_ENV === "production";
-
-  res.status(500).json({
-    message: isProd
-      ? "Something went wrong. Please try again later."
-      : err.message,
-  });
-});
+// Middleware 500 для обробки помилок
+app.use(errorHandler);
 
 await connectMongoDB();
 
