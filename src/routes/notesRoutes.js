@@ -3,6 +3,7 @@ import { getAllNotes } from '../controllers/notesController.js';
 import { getNoteById } from '../controllers/notesController.js';
 import { createNote } from '../controllers/notesController.js';
 import { deleteNote } from '../controllers/notesController.js';
+import { updateNote } from '../controllers/notesController.js';
 
 const notesRouter = Router();
 
@@ -17,5 +18,8 @@ notesRouter.post('/notes', createNote);
 
 // Видалити нотатку за ID
 notesRouter.delete('/notes/:noteId', deleteNote);
+
+// Оновити нотатку за ID
+notesRouter.patch('/notes/:noteId', updateNote);
 
 export default notesRouter;
