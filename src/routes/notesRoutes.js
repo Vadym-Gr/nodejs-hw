@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { getAllNotes } from '../controllers/notesController.js';
 import { getNoteById } from '../controllers/notesController.js';
 import { createNote } from '../controllers/notesController.js';
+import { deleteNote } from '../controllers/notesController.js';
 
 const notesRouter = Router();
 
@@ -13,5 +14,8 @@ notesRouter.get('/notes/:noteId', getNoteById);
 
 // Створити нову нотатку
 notesRouter.post('/notes', createNote);
+
+// Видалити нотатку за ID
+notesRouter.delete('/notes/:noteId', deleteNote);
 
 export default notesRouter;
