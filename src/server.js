@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-
+import { errors } from "celebrate";
 import 'dotenv/config';
 import { connectMongoDB } from './db/connectMongoDB.js';
 
@@ -21,7 +21,10 @@ app.use(notesRouter);
 // Middleware 404 (після всіх маршрутів)
 app.use(notFoundHandler);
 
-// Middleware 500 для обробки помилок
+// обробка помилок від celebrate (валідація)
+app.use(errors());
+
+// Middleware 500 для обробки інших помилок
 app.use(errorHandler);
 
 await connectMongoDB();
