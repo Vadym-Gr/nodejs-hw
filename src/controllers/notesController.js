@@ -2,8 +2,38 @@ import createHttpError from 'http-errors';
 import { Note } from '../models/note.js';
 
 export const getAllNotes = async (req, res) => {
-  const notes = await Note.find(); // Використовуємо модель Note для отримання всіх нотаток
-  res.status(200).json(notes);
+  const { page = 1, perPage = 10, tag, search = '' } = req.query; // Виводимо об'єкт запиту в консоль
+  const skip = (page - 1) * perPage; // Обчислюємо кількість пропущених документів
+
+  const notesQuery = Note.find(); // Використовуємо модель Note для отримання всіх нотаток
+
+  if (tag) {
+    notesQuery.where('tag').equals(tag);
+  };
+
+  if (search) {
+    notesQuery.where({
+      $or: [
+        { title: { $regex: search, $options: 'i' } },
+        { content: { $regex: search, $options: 'i' } },
+      ],
+    });
+  };
+
+  const [totalNotes, notes] = await Promise.all([
+    notesQuery.clone().countDocuments(),
+    notesQuery.skip(skip).limit(perPage)
+  ]); // Використовуємо модель Note для отримання всіх нотаток
+
+  const totalPages = Math.ceil(totalNotes / perPage); // Обчислюємо загальну кількість сторінок
+
+  res.status(200).json({
+    page,
+    perPage,
+    totalNotes,
+    totalPages,
+    notes
+  });
 };
 
 export const getNoteById = async (req, res) => {

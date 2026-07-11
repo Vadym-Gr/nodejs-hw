@@ -2,6 +2,20 @@ import { Joi, Segments } from 'celebrate';
 import { TAGS } from '../constants/tags.js';
 import { isValidObjectId } from 'mongoose';
 
+export const getAllNotesSchema = {
+  [Segments.QUERY]: Joi.object({
+    page: Joi.number().integer().min(1),
+    perPage: Joi.number().integer().min(3).max(20),
+    tag: Joi.string().valid(...TAGS).messages({
+      'string.base': 'Tag must be a string',
+      'any.only': `Tag must be one of the following: ${TAGS.join(', ')}`,
+    }),
+    search: Joi.string().trim().allow('').messages({
+      'string.base': 'Search must be a string',
+    }),
+  }),
+};
+
 // Схема для перевірки маршруту POST
 export const createNoteSchema = {
   [Segments.BODY]: Joi.object({
@@ -13,9 +27,9 @@ export const createNoteSchema = {
     content: Joi.string().default('').messages({
       'string.base': 'Content must be a string',
     }),
-    tags: Joi.string().valid(...TAGS).default(['Todo']).messages({
-      'string.base': 'Tags must be a string',
-      'any.only': `Tags must be one of the following: ${TAGS.join(', ')}`,
+    tag: Joi.string().valid(...TAGS).messages({
+      'string.base': 'Tag must be a string',
+      'any.only': `Tag must be one of the following: ${TAGS.join(', ')}`,
     }),
   }),
 };
@@ -42,9 +56,9 @@ export const updateNoteSchema = {
     content: Joi.string().messages({
       'string.base': 'Content must be a string',
     }),
-    tags: Joi.string().valid(...TAGS).messages({
-      'string.base': 'Tags must be a string',
-      'any.only': `Tags must be one of the following: ${TAGS.join(', ')}`,
+    tag: Joi.string().valid(...TAGS).messages({
+      'string.base': 'Tag must be a string',
+      'any.only': `Tag must be one of the following: ${TAGS.join(', ')}`,
     }),
   }).min(1).messages({
     'object.min': 'At least one field (title, content, or tags) must be provided for update',
