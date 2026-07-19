@@ -1,3 +1,4 @@
+import helmet from 'helmet';
 import express from 'express';
 import cors from 'cors';
 import { errors } from "celebrate";
@@ -8,15 +9,18 @@ import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { logger } from './middleware/logger.js';
 import notesRouter from './routes/notesRoutes.js';
+import authRouter from './routes/authRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 
+app.use(helmet());
 app.use(express.json());
 app.use(cors());
 app.use(logger);
 
 app.use(notesRouter);
+app.use(authRouter);
 
 // Middleware 404 (після всіх маршрутів)
 app.use(notFoundHandler);
