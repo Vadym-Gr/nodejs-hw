@@ -6,7 +6,7 @@ export const authenticate = async (req, res, next) => {
   const { sessionId, accessToken } = req.cookies;
 
   if (!sessionId || !accessToken) {
-    throw createHttpError(401, 'Missing tokens');
+    throw createHttpError(401, 'Missing access token');
   }
 
   const session = await Session.findOne({
@@ -20,12 +20,12 @@ export const authenticate = async (req, res, next) => {
 
   const isAccessTokenExpired = session.accessTokenValidUntil < new Date();
   if (isAccessTokenExpired) {
-    throw createHttpError(401, 'Session token expired');
+    throw createHttpError(401, 'Access token expired');
   }
 
   const user = await User.findOne({ _id: session.userId });
   if (!user) {
-    throw createHttpError(401, 'User not found');
+    throw createHttpError(401);
   }
 
   req.user = user;
