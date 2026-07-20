@@ -9,8 +9,11 @@ import { getAllNotesSchema } from '../validations/notesValidation.js';
 import { createNoteSchema } from '../validations/notesValidation.js';
 import { noteIdSchema } from '../validations/notesValidation.js';
 import { updateNoteSchema } from '../validations/notesValidation.js';
+import { authenticate } from '../middleware/authenticate.js';
 
 const notesRouter = Router();
+
+notesRouter.use('/notes', authenticate); // Додаємо middleware для аутентифікації
 
 // Отримати всі нотатки
 notesRouter.get('/notes', celebrate(getAllNotesSchema), getAllNotes);
