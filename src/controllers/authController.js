@@ -6,6 +6,9 @@ import { Session } from '../models/session.js';
 import { createSession } from '../services/auth.js';
 import { setSessionCookies } from '../services/auth.js';
 
+import { sendEmail } from '../utils/sendEmail.js';
+import jwt from 'jsonwebtoken';
+
 export const registerUser = async (req, res) => {
 
   const existingUser = await User.findOne({ email: req.body.email });
@@ -102,6 +105,23 @@ export const requestResetEmail = async (req, res) => {
     return res.status(200).json({
       message: 'If this email exists, a reset link has been sent',
     });
+  }
+
+  const resetToken = jwt.sign(
+    { sub: user._id, email },
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' },
+  );
+
+  try {
+    await sendEmail({
+      from: process.env.SMTP_FROM,
+      to: email,
+      subject: 'Reset your password',
+      html: `<p>Click <a href="${resetToken}">here</a> to reset your password!</p>`,
+    });
+  } catch {
+    throw createHttpError(500, 'Failed to send the email, please try again later.');
   }
 
 	res.status(200).json({
