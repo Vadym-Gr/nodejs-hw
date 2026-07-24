@@ -93,5 +93,18 @@ export const refreshUserSession = async (req, res) => {
   res.status(200).json({ "message": "Session refreshed" });
 };
 
-// 'Session not found'
-// 'Session token expired'
+export const requestResetEmail = async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(200).json({
+      message: 'If this email exists, a reset link has been sent',
+    });
+  }
+
+	res.status(200).json({
+		message: 'Password reset email sent successfully'
+	});
+};
