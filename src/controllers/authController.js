@@ -6,7 +6,7 @@ import { Session } from '../models/session.js';
 import { createSession } from '../services/auth.js';
 import { setSessionCookies } from '../services/auth.js';
 
-import { sendEmail } from '../utils/sendEmail.js';
+import { sendMail } from '../utils/sendMail.js';
 import jwt from 'jsonwebtoken';
 
 import handlebars from 'handlebars';
@@ -126,7 +126,7 @@ export const requestResetEmail = async (req, res) => {
   });
 
   try {
-    await sendEmail({
+    await sendMail({
       from: process.env.SMTP_FROM,
       to: email,
       subject: 'Reset your password',
@@ -172,6 +172,6 @@ export const resetPassword = async (req, res) => {
 
 	// 5. Повертаю успішну відповідь
   res.status(200).json({
-    message: 'Password reset successfully. Please log in again.',
+    message: 'Password reset successfully',
   });
 };
