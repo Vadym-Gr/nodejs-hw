@@ -11,6 +11,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { logger } from './middleware/logger.js';
 import notesRouter from './routes/notesRoutes.js';
 import authRouter from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -23,6 +24,7 @@ app.use(logger);
 
 app.use(notesRouter);
 app.use(authRouter);
+app.use(userRoutes);
 
 // Middleware 404 (після всіх маршрутів)
 app.use(notFoundHandler);
